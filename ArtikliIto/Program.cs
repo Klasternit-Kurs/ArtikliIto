@@ -6,14 +6,33 @@ using System.Threading.Tasks;
 
 namespace ArtikliIto
 {
+	//TODO izmena -- Korisnik unese sifru artikla i mi mu ponudimo sta da izmeni
+	//Jedan nacin sa d/n pitanjima. Izmena imena?(d/n) --Izmena ulazne cene(d/n)
+	//Drugi nacin da se napravi meni kada se nadje sifra, pa da moze da izabere sta sve menja
 	class Program
 	{
 		static List<Artikal> Artikli = new List<Artikal>();
+		static List<Racun> Racuni = new List<Racun>();
 
 		static void Main(string[] args)
 		{
+			/*uint k = 0;
+			Console.WriteLine(k);
 
-			/*int broj = 9;
+			k--;
+		
+			Console.WriteLine(k);
+
+			byte b = 255;
+			Console.WriteLine(b);
+			checked
+			{
+				b++;
+			}
+			Console.WriteLine(b);
+			Console.ReadKey();
+
+			int broj = 9;
 			decimal brojSaOstatkom = broj;
 			Console.WriteLine(broj / 2);
 			Console.WriteLine(brojSaOstatkom / 2);
@@ -23,7 +42,7 @@ namespace ArtikliIto
 			Console.WriteLine(aa);
 			Console.WriteLine(b);*/
 
-			
+
 
 			string unos;
 			do
@@ -39,6 +58,18 @@ namespace ArtikliIto
 					case "2":
 						Ispis();
 						break;
+					case "3":
+						//Domaci :P 
+						break;
+					case "4":
+						Brisanje();
+						break;
+					case "5":
+						Izdavanje();
+						break;
+					case "6":
+						PrikazRacuna();
+						break;
 					case "7":
 						Console.WriteLine("Bye :)");
 						break;
@@ -47,6 +78,55 @@ namespace ArtikliIto
 			} while (unos != "7");
 
 			Console.ReadKey();
+		}
+
+		static void PrikazRacuna()
+		{
+			Console.WriteLine("=============================================================");
+			foreach (Racun r in Racuni)
+			{
+				Console.WriteLine($"{r.Rbr}. Artikal:{r.Art.sifra}-{r.Art.naziv} Cena:{r.Art.DajIzlaznuCenu()} Kolicina:{r.Kolicina} Total:{r.Total()}");
+			}
+			Console.WriteLine("=============================================================");
+		}
+
+		static void Izdavanje()
+		{
+			//TODO napraviti petlju tako da trazi sifru od korisnika dokle god ne naidje na validnu
+			//TODO proveriti kolicinu na stanju pre prodaje, ne smemo da prodamo vise nego sto imamo :)
+			Racun r = new Racun();
+			Console.Write("Unesite sifru: ");
+			string sifra = Console.ReadLine();
+			foreach (Artikal a in Artikli)
+			{
+				if (a.sifra == sifra)
+				{
+					Console.Write("Unesite kolicinu: ");
+					r.Rbr = (Racuni.Count + 1).ToString();
+					r.Art = a;
+					r.Kolicina = int.Parse(Console.ReadLine());
+					a.kolicina -= r.Kolicina;
+					Racuni.Add(r);
+					return;
+				}
+			}
+			Console.WriteLine("Sifre nema :(");
+
+		}
+
+		static void Brisanje()
+		{
+			Console.Write("Unesite sifru: ");
+			string sifra = Console.ReadLine();
+			foreach (Artikal a in Artikli)
+			{
+				if (a.sifra == sifra)
+				{
+					Artikli.Remove(a);
+					return;
+				}
+			}
+			Console.WriteLine("Sifra ne postoji :(");
 		}
 
 		static void Ispis()
@@ -61,10 +141,28 @@ namespace ArtikliIto
 
 		static void Unos()
 		{
+			//TODO napraviti petlje kod unosa, te kada korisnik unese sifru ili naziv
+			//koji vec postoje samo da se trazi ponovni unos
 			Console.Write("Unesite sifru: ");
 			string s = Console.ReadLine();
+			foreach (Artikal a in Artikli)
+			{
+				if (a.sifra == s)
+				{
+					Console.WriteLine("Sifra vec postoji!");
+					return;
+				}
+			}
 			Console.Write("Unesite naziv: ");
 			string n = Console.ReadLine();
+			foreach (Artikal a in Artikli)
+			{
+				if (a.naziv == n)
+				{
+					Console.WriteLine("Naziv vec postoji!");
+					return;
+				}
+			}
 			Console.Write("Unesite ulaznu cenu: ");
 			decimal c = decimal.Parse(Console.ReadLine());
 			Console.Write("Unesite marzu: ");
@@ -89,6 +187,17 @@ namespace ArtikliIto
 	}
 
 	
+	class Racun
+	{
+		public string Rbr;                
+		public int Kolicina;   
+		public Artikal Art;
+		
+		public decimal Total()
+		{
+			return Art.DajIzlaznuCenu() * Kolicina;
+		}
+	}
 
 	class Artikal
 	{
