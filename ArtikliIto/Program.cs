@@ -111,6 +111,8 @@ namespace ArtikliIto
 				{
 					if (a.sifra == sifra)
 					{
+						//TODO Proveriti da li artikal vec postoji na racunu,
+						//te ako postoji, dodati kolicino na vec postojeci unos
 						Console.Write("Unesite kolicinu: ");
 						r.Rbr = (Racuni.Count + 1).ToString();
 						r.Art.Add(a);
