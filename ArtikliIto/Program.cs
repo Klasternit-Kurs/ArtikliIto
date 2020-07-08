@@ -15,7 +15,7 @@ namespace ArtikliIto
 		static List<Racun> Racuni = new List<Racun>();
 
 		static void Main(string[] args)
-		{
+		{			
 			/*uint k = 0;
 			Console.WriteLine(k);
 
@@ -85,7 +85,13 @@ namespace ArtikliIto
 			Console.WriteLine("=============================================================");
 			foreach (Racun r in Racuni)
 			{
-				Console.WriteLine($"{r.Rbr}. Artikal:{r.Art.sifra}-{r.Art.naziv} Cena:{r.Art.DajIzlaznuCenu()} Kolicina:{r.Kolicina} Total:{r.Total()}");
+				Console.WriteLine($"Racun: {r.Rbr}.");
+				Console.WriteLine("---------------------");
+				for(int indeks = 0; indeks < r.Art.Count; indeks++)
+				{
+					Console.WriteLine($"|{r.Art[indeks].sifra}-{r.Art[indeks].naziv} | {r.Art[indeks].DajIzlaznuCenu()} | {r.Kolicina[indeks]} | {r.Kolicina[indeks] * r.Art[indeks].DajIzlaznuCenu()}|");
+				}
+				Console.WriteLine("---------------------");
 			}
 			Console.WriteLine("=============================================================");
 		}
@@ -94,24 +100,32 @@ namespace ArtikliIto
 		{
 			//TODO napraviti petlju tako da trazi sifru od korisnika dokle god ne naidje na validnu
 			//TODO proveriti kolicinu na stanju pre prodaje, ne smemo da prodamo vise nego sto imamo :)
+			//TODO srediti tako da ne ispisuje da nema sifre i kada treba i kada ne :)
 			Racun r = new Racun();
-			Console.Write("Unesite sifru: ");
-			string sifra = Console.ReadLine();
-			foreach (Artikal a in Artikli)
+			char u = ' ';
+			do
 			{
-				if (a.sifra == sifra)
+				Console.Write("Unesite sifru: ");
+				string sifra = Console.ReadLine();
+				foreach (Artikal a in Artikli)
 				{
-					Console.Write("Unesite kolicinu: ");
-					r.Rbr = (Racuni.Count + 1).ToString();
-					r.Art = a;
-					r.Kolicina = int.Parse(Console.ReadLine());
-					a.kolicina -= r.Kolicina;
-					Racuni.Add(r);
-					return;
+					if (a.sifra == sifra)
+					{
+						Console.Write("Unesite kolicinu: ");
+						r.Rbr = (Racuni.Count + 1).ToString();
+						r.Art.Add(a);
+						int kolicina = int.Parse(Console.ReadLine());
+						r.Kolicina.Add(kolicina);
+						a.kolicina -= kolicina;
+						//a.kolicina -= r.Kolicina[r.Kolicina.Count - 1];
+						Console.Write("Nastavite unos?(d/n): ");
+						u = Console.ReadKey().KeyChar;
+						Console.WriteLine();
+					}
 				}
-			}
-			Console.WriteLine("Sifre nema :(");
-
+				Console.WriteLine("Sifre nema :(");
+			} while (u != 'n');
+			Racuni.Add(r);
 		}
 
 		static void Brisanje()
@@ -190,12 +204,12 @@ namespace ArtikliIto
 	class Racun
 	{
 		public string Rbr;                
-		public int Kolicina;   
-		public Artikal Art;
+		public List<int> Kolicina = new List<int>();   
+		public List<Artikal> Art = new List<Artikal>();
 		
 		public decimal Total()
 		{
-			return Art.DajIzlaznuCenu() * Kolicina;
+			return 0;
 		}
 	}
 
