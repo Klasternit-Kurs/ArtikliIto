@@ -59,7 +59,7 @@ namespace ArtikliIto
 						Ispis();
 						break;
 					case "3":
-						//Domaci :P 
+						Izmena();
 						break;
 					case "4":
 						Brisanje();
@@ -78,6 +78,48 @@ namespace ArtikliIto
 			} while (unos != "7");
 
 			Console.ReadKey();
+		}
+
+		static void Izmena()
+		{
+			Console.Write("Unesite sifru: ");
+			string sifra = Console.ReadLine();
+			foreach (Artikal a in Artikli)
+			{
+				if (a.sifra == sifra)
+				{
+					Console.Write("Unesite novi naziv ili nista da preskocite: ");
+					string unos = Console.ReadLine();
+					if (unos != "")
+					{
+						a.naziv = unos;
+					}
+
+					Console.Write("Unesite novu ulaznu cenu ili nista da preskocite: ");
+					unos = Console.ReadLine();
+					if (unos != "")
+					{
+						a.ucena = decimal.Parse(unos);
+					}
+
+					Console.Write("Unesite novu marzu ili nista da preskocite: ");
+					unos = Console.ReadLine();
+					if (unos != "")
+					{
+						a.marzaProc = int.Parse(unos);
+					}
+
+					Console.Write("Unesite novu kolicinu ili nista da preskocite: ");
+					unos = Console.ReadLine();
+					if (unos != "")
+					{
+						a.kolicina = int.Parse(unos);
+					}
+
+					return;
+				}
+			}
+			Console.WriteLine("Sifra ne postoji :(");
 		}
 
 		static void PrikazRacuna()
@@ -107,26 +149,66 @@ namespace ArtikliIto
 			{
 				Console.Write("Unesite sifru: ");
 				string sifra = Console.ReadLine();
+				bool PrikaziGresku = true;
 				foreach (Artikal a in Artikli)
 				{
 					if (a.sifra == sifra)
 					{
-						//TODO Proveriti da li artikal vec postoji na racunu,
-						//te ako postoji, dodati kolicino na vec postojeci unos
-						Console.Write("Unesite kolicinu: ");
-						r.Rbr = (Racuni.Count + 1).ToString();
-						r.Art.Add(a);
-						int kolicina = int.Parse(Console.ReadLine());
-						r.Kolicina.Add(kolicina);
+						//if (r.Art.Contains(a))
+						//{
+						//	Console.WriteLine("Sadrzi!");
+						//}
+
+						int indeksDuplikata = -1;
+
+
+						for (int indeks = 0; indeks < r.Art.Count; indeks++)
+						{
+							if (r.Art[indeks] == a)
+							{
+								indeksDuplikata = indeks;
+								break;
+							}
+						}
+
+						if (indeksDuplikata == -1)
+						{
+							r.Art.Add(a);
+						}
+
+						int kolicina;
+						do
+						{
+							Console.Write($"Unesite kolicinu (na stanju: {a.kolicina}): ");
+							kolicina = int.Parse(Console.ReadLine());
+							if (kolicina <= a.kolicina && kolicina > 0)
+							{
+								break;
+							}
+							Console.WriteLine("Losa kolicina :/");
+
+						} while (true);
+						if (indeksDuplikata == -1)
+						{
+							r.Kolicina.Add(kolicina);
+						} else
+						{
+							r.Kolicina[indeksDuplikata] += kolicina;
+						}
 						a.kolicina -= kolicina;
 						//a.kolicina -= r.Kolicina[r.Kolicina.Count - 1];
 						Console.Write("Nastavite unos?(d/n): ");
 						u = Console.ReadKey().KeyChar;
 						Console.WriteLine();
+						PrikaziGresku = false;
 					}
 				}
-				Console.WriteLine("Sifre nema :(");
+				if (PrikaziGresku)
+				{
+					Console.WriteLine("Sifre nema :(");
+				}
 			} while (u != 'n');
+			r.Rbr = (Racuni.Count + 1).ToString();
 			Racuni.Add(r);
 		}
 
@@ -159,16 +241,25 @@ namespace ArtikliIto
 		{
 			//TODO napraviti petlje kod unosa, te kada korisnik unese sifru ili naziv
 			//koji vec postoje samo da se trazi ponovni unos
-			Console.Write("Unesite sifru: ");
-			string s = Console.ReadLine();
-			foreach (Artikal a in Artikli)
+			string s;
+			bool NadjenDuplikat;
+			do
 			{
-				if (a.sifra == s)
+				NadjenDuplikat = false;
+				Console.Write("Unesite sifru: ");
+				s = Console.ReadLine();
+
+				foreach (Artikal a in Artikli)
 				{
-					Console.WriteLine("Sifra vec postoji!");
-					return;
+					if (a.sifra == s)
+					{
+						Console.WriteLine("Sifra vec postoji!");
+						NadjenDuplikat = true;
+					}
 				}
-			}
+
+			} while (NadjenDuplikat);
+
 			Console.Write("Unesite naziv: ");
 			string n = Console.ReadLine();
 			foreach (Artikal a in Artikli)
@@ -203,38 +294,5 @@ namespace ArtikliIto
 	}
 
 	
-	class Racun
-	{
-		public string Rbr;                
-		public List<int> Kolicina = new List<int>();   
-		public List<Artikal> Art = new List<Artikal>();
-		
-		public decimal Total()
-		{
-			return 0;
-		}
-	}
-
-	class Artikal
-	{
-		public string sifra;
-		public string naziv;
-		public decimal ucena;    
-		public int marzaProc; 
-		public int kolicina;
-
-		public decimal DajIzlaznuCenu()
-		{
-			return ucena * (1 + (decimal)marzaProc / 100);
-		}
-
-		public Artikal(string a, string b, decimal c, int d, int e)
-		{
-			sifra = a;
-			naziv = b;
-			ucena = c;
-			marzaProc = d;
-			kolicina = e;
-		}
-	}
+	
 }
