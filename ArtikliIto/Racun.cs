@@ -9,8 +9,7 @@ namespace ArtikliIto
 	class Racun
 	{
 		public string Rbr;
-		public List<int> Kolicina = new List<int>();
-		public List<Artikal> Art = new List<Artikal>();
+		public Dictionary<Artikal, int> ArtikliKolicine = new Dictionary<Artikal, int>();
 
 		public decimal Total()
 		{

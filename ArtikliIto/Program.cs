@@ -129,9 +129,14 @@ namespace ArtikliIto
 			{
 				Console.WriteLine($"Racun: {r.Rbr}.");
 				Console.WriteLine("---------------------");
-				for(int indeks = 0; indeks < r.Art.Count; indeks++)
+				/*for(int indeks = 0; indeks < r.Art.Count; indeks++)
 				{
 					Console.WriteLine($"|{r.Art[indeks].sifra}-{r.Art[indeks].naziv} | {r.Art[indeks].DajIzlaznuCenu()} | {r.Kolicina[indeks]} | {r.Kolicina[indeks] * r.Art[indeks].DajIzlaznuCenu()}|");
+				}*/
+
+				foreach(Artikal a in r.ArtikliKolicine.Keys)
+				{
+					Console.WriteLine($"|{a.sifra}-{a.naziv} | {a.DajIzlaznuCenu()} | {r.ArtikliKolicine[a]} | {r.ArtikliKolicine[a] * a.DajIzlaznuCenu()}|");
 				}
 				Console.WriteLine("---------------------");
 			}
@@ -159,7 +164,8 @@ namespace ArtikliIto
 						//	Console.WriteLine("Sadrzi!");
 						//}
 
-						int indeksDuplikata = -1;
+						//Ovo je resenje za dve liste 
+						/*int indeksDuplikata = -1;
 
 
 						for (int indeks = 0; indeks < r.Art.Count; indeks++)
@@ -174,7 +180,7 @@ namespace ArtikliIto
 						if (indeksDuplikata == -1)
 						{
 							r.Art.Add(a);
-						}
+						}*/ 
 
 						int kolicina;
 						do
@@ -188,13 +194,24 @@ namespace ArtikliIto
 							Console.WriteLine("Losa kolicina :/");
 
 						} while (true);
+
+						if (r.ArtikliKolicine.ContainsKey(a))
+						{
+							r.ArtikliKolicine[a] += kolicina;
+						} else
+						{
+							r.ArtikliKolicine.Add(a, kolicina);
+						}
+
+						/* Ovo je za dve liste
 						if (indeksDuplikata == -1)
 						{
 							r.Kolicina.Add(kolicina);
 						} else
 						{
 							r.Kolicina[indeksDuplikata] += kolicina;
-						}
+						}*/
+
 						a.kolicina -= kolicina;
 						//a.kolicina -= r.Kolicina[r.Kolicina.Count - 1];
 						Console.Write("Nastavite unos?(d/n): ");
