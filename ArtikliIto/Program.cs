@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace ArtikliIto
 {
-	//TODO izmena -- Korisnik unese sifru artikla i mi mu ponudimo sta da izmeni
-	//Jedan nacin sa d/n pitanjima. Izmena imena?(d/n) --Izmena ulazne cene(d/n)
-	//Drugi nacin da se napravi meni kada se nadje sifra, pa da moze da izabere sta sve menja
+	//TODO treba napraviti snimanje artikala :)
+	//TODO treba uzeti nas stari imenik i dodati snimanje i citanje iz fajlova :) 
 	class Program
 	{
 		static List<Artikal> Artikli = new List<Artikal>();
@@ -43,6 +43,51 @@ namespace ArtikliIto
 			Console.WriteLine(b);*/
 
 
+			if (File.Exists("artikli.txt"))
+			{
+				foreach(string art in File.ReadLines("artikli.txt"))
+				{  //  0    1    2   3 4
+					//007;Plazam;49;34;56
+
+					string[] polja = art.Split(';');
+					Artikli.Add(new Artikal(polja[0], polja[1], decimal.Parse(polja[2]), int.Parse(polja[3]),
+											int.Parse(polja[4])));
+				}
+			}
+
+			if (File.Exists("racuni.txt"))
+			{
+				foreach(string rac in File.ReadLines("racuni.txt"))
+				{
+					string[] polja = rac.Split(';');
+					Racun r = new Racun();
+					r.Rbr = polja[0];
+					List<string> poljaKaoLista = polja.ToList();
+					poljaKaoLista.RemoveAt(0);
+
+					Artikal zaRacun = null;
+					for(int indeks = 0; indeks < poljaKaoLista.Count; indeks++)
+					{
+						if (indeks%2 == 0)
+						{
+							foreach(Artikal a in Artikli)
+							{
+								if (a.sifra == poljaKaoLista[indeks])
+								{
+									zaRacun = a;
+									break;
+								}
+							}
+						}else
+						{
+							r.ArtikliKolicine.Add(zaRacun, int.Parse(poljaKaoLista[indeks]));
+						}
+					}
+					Racuni.Add(r);
+
+				}
+			}
+
 
 			string unos;
 			do
@@ -72,12 +117,25 @@ namespace ArtikliIto
 						break;
 					case "7":
 						Console.WriteLine("Bye :)");
+						Snimanje();
 						break;
 				}
 
 			} while (unos != "7");
 
 			Console.ReadKey();
+		}
+
+		static void Snimanje()
+		{
+			if (File.Exists("artikli.txt"))
+			{
+				File.Delete("artikli.txt");
+			}
+			foreach(Artikal a in Artikli)
+			{
+				File.AppendAllText("artikli.txt", $"{a.sifra};{a.naziv};{a.ucena};{a.marzaProc};{a.kolicina}" + Environment.NewLine);
+			}
 		}
 
 		static void Izmena()

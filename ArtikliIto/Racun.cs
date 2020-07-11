@@ -13,7 +13,14 @@ namespace ArtikliIto
 
 		public decimal Total()
 		{
-			return 0;
+			decimal total = 0;
+
+			foreach(Artikal a in ArtikliKolicine.Keys)
+			{
+				total += a.DajIzlaznuCenu() * ArtikliKolicine[a];
+			}
+
+			return total;
 		}
 	}
 }
